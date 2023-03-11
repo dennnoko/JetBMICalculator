@@ -1,8 +1,10 @@
 package com.example.jetbmicalculator
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -18,10 +20,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetbmicalculator.ui.theme.JetBMICalculatorTheme
+import com.example.jetbmicalculator.MainViewModel
 
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             JetBMICalculatorTheme {
                 // A surface container using the 'background' color from the theme
@@ -40,17 +46,19 @@ class MainActivity : ComponentActivity() {
                         )
                         Spacer(modifier = Modifier.height(30.dp))
 
+                        //身長
                         PinkLabeledTextField(
-                            value = "",
-                            onValueChange = {},
+                            value = viewModel.height,
+                            onValueChange = { viewModel.height = it },
                             label = "身長(cm)",
                             placeholder = "170",
                         )
                         Spacer(modifier = Modifier.height(20.dp))
 
+                        //体重
                         PinkLabeledTextField(
-                            value = "",
-                            onValueChange = {},
+                            value = viewModel.weight,
+                            onValueChange = { viewModel.weight = it },
                             label = "体重(kg)",
                             placeholder = "65",
                         )
@@ -58,7 +66,7 @@ class MainActivity : ComponentActivity() {
                         
                         //計算ボタン
                         Button(
-                            onClick = { /*TODO*/ },
+                            onClick = { viewModel.calculateBMI() },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFF85F6A))
                         ) {
@@ -73,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
                         //結果表示テキスト
                         Text(
-                            text = "あなたのBMIは~~です",
+                            text = "あなたのBMIは${viewModel.bmi}です",
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                             color = Color.Gray,
@@ -104,7 +112,7 @@ fun PinkLabeledTextField(
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = value,
-            onValueChange = {onValueChange},
+            onValueChange = onValueChange,
             colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
             placeholder = { Text(text = placeholder)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
